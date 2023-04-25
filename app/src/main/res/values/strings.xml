@@ -1,3 +1,72 @@
 <resources>
-    <string name="app_name">PokemonApp</string>
+    <string name="app_name">Pokemon App</string>
+    <string name="pokemon">Pokemon</string>
+    <string name="collectible">Collectible</string>
+    <string name="card_list">Card list</string>
+    <string name="error_getcards">Ошибка получения данных карты! 1$%s</string>
+    <string name="loading">Loading</string>
+    <string name="author_value">Author: %s</string>
+    <string name="mana">Mana</string>
+    <string name="classes">Classes</string>
+    <string name="attack">Attack</string>
+    <string name="health">Health</string>
+    <string name="filters">Filters</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
+    <string name="map">Map</string>
+    <string name="cards">Cards</string>
+    <string name="settings">Settings</string>
+    <string name="city">City</string>
+    <string name="longitude">Longitude</string>
+    <string name="latitude">Latitude</string>
+    <string name="country">Country</string>
+    <string name="region">Region</string>
+    <string name="population">Population</string>
+    <string name="nothing_selected">Nothing selected</string>
+
+
+    <string-array name="mana_count">
+        <item>Any Cost</item>
+        <item>Mana: 0</item>
+        <item>Mana: 1</item>
+        <item>Mana: 2</item>
+        <item>Mana: 3</item>
+        <item>Mana: 4</item>
+        <item>Mana: 5</item>
+        <item>Mana: 6</item>
+        <item>Mana: 7</item>
+        <item>Mana: 8</item>
+        <item>Mana: 9</item>
+        <item>Mana: 10+</item>
+    </string-array>
+
+    <string-array name="attack_count">
+        <item>Any Attack</item>
+        <item>Attack: 0</item>
+        <item>Attack: 1</item>
+        <item>Attack: 2</item>
+        <item>Attack: 3</item>
+        <item>Attack: 4</item>
+        <item>Attack: 5</item>
+        <item>Attack: 6</item>
+        <item>Attack: 7</item>
+        <item>Attack: 8</item>
+        <item>Attack: 9</item>
+        <item>Attack: 10+</item>
+    </string-array>
+
+    <string-array name="health_count">
+        <item>Any Health</item>
+        <item>Health: 0</item>
+        <item>Health: 1</item>
+        <item>Health: 2</item>
+        <item>Health: 3</item>
+        <item>Health: 4</item>
+        <item>Health: 5</item>
+        <item>Health: 6</item>
+        <item>Health: 7</item>
+        <item>Health: 8</item>
+        <item>Health: 9</item>
+        <item>Health: 10+</item>
+    </string-array>
 </resources>

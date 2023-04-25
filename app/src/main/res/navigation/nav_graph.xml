@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_page"
+    app:startDestination="@id/splashScreen">
+
+    <fragment
+        android:id="@+id/splashScreen"
+        android:name="com.example.pokemon_app.ui.SplashScreen"
+        android:label="SplashScreen" >
+        <action
+            android:id="@+id/action_splashScreen_to_listPokemonFragment"
+            app:destination="@id/listPokemonFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/listPokemonFragment"
+        android:name="com.example.pokemon_app.ui.pokemonList.ListPokemonFragment"
+        android:label="ListPokemonFragment" >
+        <action
+            android:id="@+id/action_listPokemonFragment_to_detailPokemonFragment"
+            app:destination="@id/detailPokemonFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailPokemonFragment"
+        android:name="com.example.pokemon_app.ui.pokemonDetail.DetailPokemonFragment"
+        android:label="DetailPokemonFragment" >
+        <argument
+            android:name="id"
+            app:argType="integer" />
+    </fragment>
+</navigation>

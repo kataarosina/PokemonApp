@@ -14,10 +14,12 @@ import androidx.navigation.ui.setupWithNavController
 import coil.load
 import com.example.domain.model.LceState
 import com.example.domain.model.Pokemon
+import com.example.pokemon_app.R
 import com.example.pokemon_app.databinding.FragmentDetailPokemonBinding
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+
 
 
 class DetailPokemonFragment : Fragment() {
@@ -28,13 +30,13 @@ class DetailPokemonFragment : Fragment() {
             "View was destroyed"
         }
 
-
     private val viewModel by viewModel<DetailPokemonViewModel> {
         parametersOf(args.id)
     }
 
     private val args by navArgs<DetailPokemonFragmentArgs>()
 
+    // Inflates the fragment's view and returns the root view
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -45,12 +47,13 @@ class DetailPokemonFragment : Fragment() {
             .root
     }
 
+    // Sets up the fragment's views and observes the view model's data
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         with(binding) {
             toolbar.setupWithNavController(findNavController())
-
+            // Observe the view model's data and update the views accordingly
             lifecycleScope.launch {
                 viewModel.pokemonFlow.collect { lce ->
                     when (lce) {
@@ -80,22 +83,20 @@ class DetailPokemonFragment : Fragment() {
         with(binding) {
             imageView.load(pokemon.image)
             name.text = pokemon.name
-            type.text = "type: "+ pokemon.type
-            weight.text="weight: " + pokemon.weight.toString()
-            height.text="heiht: " + pokemon.height.toString()
+            type.text = pokemon.type
+            weight.text = getString(R.string.pokemon_weight, (pokemon.weight/10).toString())
+            height.text = getString(R.string.pokemon_height, (pokemon.height*10).toString())
         }
     }
 
-        private fun isVisibleProgressBar(visible: Boolean) {
-            binding.paginationProgressBar.isVisible = visible
-        }
 
-        companion object {
-        }
-
-        override fun onDestroyView() {
-            super.onDestroyView()
-            _binding = null
-        }
-
+    private fun isVisibleProgressBar(visible: Boolean) {
+        binding.paginationProgressBar.isVisible = visible
     }
+
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+}

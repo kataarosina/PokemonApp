@@ -9,7 +9,7 @@ internal fun PokemonDTO.toDomainModel(image: String): Pokemon {
     return Pokemon(
         id = id,
         name = name,
-        type = types.firstOrNull()?.type?.name.orEmpty(),
+        type = types.map{ it.type.name }.joinToString(", "),
         image = image,
         weight = weight,
         height = height

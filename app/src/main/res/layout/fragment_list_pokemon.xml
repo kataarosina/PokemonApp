@@ -11,10 +11,9 @@
         style="@style/Widget.MaterialComponents.Toolbar.Primary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/background"
+        app:title="Pokemon list"
+        android:background="@color/primaryColor"
         app:layout_constraintTop_toTopOf="parent"
-        app:title="@string/card_list"
-        app:menu="@menu/toolbar_menu"
         tools:layout_editor_absoluteX="16dp" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -29,6 +28,7 @@
                 android:id="@+id/recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="@color/background"
                 android:clipToPadding="false"
                 android:padding="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"

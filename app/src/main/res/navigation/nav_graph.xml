@@ -3,19 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_page"
     app:startDestination="@id/splashScreen">
-
     <fragment
         android:id="@+id/splashScreen"
         android:name="com.example.pokemon_app.ui.SplashScreen"
         android:label="SplashScreen" >
         <action
             android:id="@+id/action_splashScreen_to_listPokemonFragment"
-            app:destination="@id/listPokemonFragment" />
+            app:destination="@id/listPokemonFragment"
+            app:popUpTo="@id/splashScreen"
+            app:popUpToInclusive="true" />
+
     </fragment>
     <fragment
         android:id="@+id/listPokemonFragment"
         android:name="com.example.pokemon_app.ui.pokemonList.ListPokemonFragment"
-        android:label="ListPokemonFragment" >
+        android:label="Pokemon list" >
         <action
             android:id="@+id/action_listPokemonFragment_to_detailPokemonFragment"
             app:destination="@id/detailPokemonFragment" />
@@ -23,7 +25,7 @@
     <fragment
         android:id="@+id/detailPokemonFragment"
         android:name="com.example.pokemon_app.ui.pokemonDetail.DetailPokemonFragment"
-        android:label="DetailPokemonFragment" >
+        android:label="Pokemon information" >
         <argument
             android:name="id"
             app:argType="integer" />

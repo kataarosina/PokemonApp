@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.runningReduce
+import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 
@@ -34,6 +34,7 @@ class ListPokemonViewModel(
         replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
 
+    // Mutable state flow that emits the current LCE state of the list of pokemons
     private val mutableState = MutableStateFlow<LceState<List<Pokemon>>>(LceState.Loading)
     val state: StateFlow<LceState<List<Pokemon>>>
         get() = mutableState
@@ -46,7 +47,6 @@ class ListPokemonViewModel(
         )
 
     fun onLoadPokemons() {
-        //loadPokemonsFlow.tryEmit(Unit)
         viewModelScope.launch {
             try {
                 loadPokemonsFlow.emit(Unit)
@@ -56,7 +56,6 @@ class ListPokemonViewModel(
         }
     }
 
-
     private fun pokemonDataFlow(): Flow<List<Pokemon>> {
         return loadPokemonsFlow
             .onEach {
@@ -64,7 +63,8 @@ class ListPokemonViewModel(
                 mutableState.value = LceState.Loading
             }
             .map {
-                getPokemonListUseCase.invoke( currentPage)
+                // Load the next page of pokemons and update the state accordingly
+                getPokemonListUseCase.invoke(currentPage)
                     .apply { isLoading = false }
                     .fold(
                         onSuccess = {
@@ -72,19 +72,26 @@ class ListPokemonViewModel(
                             currentPage++
                             mutableState.value = LceState.Content(it)
                             it
-
                         },
                         onFailure = {
                             mutableState.value = LceState.Error(it)
                             emptyList()
-
                         }
                     )
-            }  .onStart {
+            }
+            // Start by loading data from the database and then continue with new data from the API
+            .onStart {
                 onLoadPokemons()
                 emit(getPokemonsDaoUseCase.invoke())
             }
-            .runningReduce { accumulator, value -> accumulator + value }
+            // Deduplicate the list of pokemons by ID to avoid duplicates when combining the old and new data
+            .scan(emptyList<Pokemon>()) { accumulator, value ->
+                val newElements = value.filter { newValue ->
+                    !accumulator.any { it.id == newValue.id }
+                }
+                accumulator + newElements
+            }
+            // Only emit new data if it's different from the previous data
             .distinctUntilChanged()
     }
 

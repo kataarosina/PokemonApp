@@ -7,8 +7,9 @@ class GetPokemonListUseCase(
     private val pokemonRemoteRepository: PokemonRemoteRepository,
 ) {
     private var pageSize = 50
-
-    suspend operator fun invoke( currentPage: Int ): Result<List<Pokemon>> {
+    // Fetches a list of Pokemon from the remote repository for the specified page
+    // Returns a Result object containing either the list of Pokemon or an exception if an error occurred
+    suspend operator fun invoke(currentPage: Int): Result<List<Pokemon>> {
         return pokemonRemoteRepository.getPokemons(currentPage, pageSize)
     }
 }

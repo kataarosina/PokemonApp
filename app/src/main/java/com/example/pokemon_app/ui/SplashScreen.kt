@@ -1,32 +1,29 @@
 package com.example.pokemon_app.ui
-
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.example.pokemon_app.databinding.ActivitySplashBinding
+import com.example.pokemon_app.databinding.FragmentSplashBinding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @SuppressLint("CustomSplashScreen")
 class SplashScreen : Fragment() {
 
-    private var _binding: ActivitySplashBinding? = null
-    private val binding
-        get() = requireNotNull(_binding) {
-            "View was destroyed"
-        }
-
+    private var _binding: FragmentSplashBinding? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        return ActivitySplashBinding.inflate(inflater, container, false)
+        return FragmentSplashBinding.inflate(inflater, container, false)
             .also { binding ->
                 _binding = binding
             }
@@ -35,15 +32,19 @@ class SplashScreen : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        with(binding) {
-            imgBackgroud.animate().translationY(-2500.0f).setDuration(1000).startDelay = 2000
-            appMade.animate().translationY(2000.0f).setDuration(1000).startDelay = 2000
-            animationView.animate().translationY(1500.0f).setDuration(1000).startDelay = 2000
+
+        // Launches a coroutine to wait for a delay before navigating to the next screen
+        lifecycleScope.launch {
+            delay(1400) // Wait for 1.4 seconds
+            withContext(Dispatchers.Main) {
+                findNavController().navigate(
+                    SplashScreenDirections.actionSplashScreenToListPokemonFragment() // Navigate to the ListPokemonFragment
+                )
+            }
         }
-        Handler(Looper.myLooper()!!).postDelayed({
-            findNavController().navigate(
-                SplashScreenDirections.actionSplashScreenToListPokemonFragment())
-            //findNavController().navigate(R.id.action_splashScreen_to_listPokemonFragment)
-        }, 3000)
+    }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

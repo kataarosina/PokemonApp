@@ -13,6 +13,7 @@ class GetPokemonUseCase (
     private val pokemonLocalRepository: PokemonLocalRepository,) {
 
     operator fun invoke(pokemonId :Int): Flow<LceState<Pokemon>> = flow {
+        // Call the remote repository to get the Pokemon by id and convert the result to LceState.Content if successful, or LceState.Error if it fails
         val pokemon = pokemonRemoteRepository.getPokemon(pokemonId)
             .fold(
                 onSuccess = { pokemon ->
@@ -22,9 +23,11 @@ class GetPokemonUseCase (
                     LceState.Error(err)
                 }
             )
+        // Emit the LceState for the remote repository result
         emit(pokemon)
 
     }.onStart {
+        // When the flow starts, emit the LceState for the Pokemon retrieved from the local repository
         emit(LceState.Content(pokemonLocalRepository.getPokemonFromDao(pokemonId)))
     }
 

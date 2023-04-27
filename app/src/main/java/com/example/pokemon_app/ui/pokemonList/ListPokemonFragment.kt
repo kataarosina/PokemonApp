@@ -9,19 +9,18 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.domain.model.LceState
 import com.example.pokemon_app.adapter.PokemonAdapter
 import com.example.pokemon_app.databinding.FragmentListPokemonBinding
 import com.example.pokemon_app.extension.addPaginationScrollListener
 import com.example.pokemon_app.extension.addPokemonDecoration
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class ListPokemonFragment : Fragment() {
+
 
     private var _binding: FragmentListPokemonBinding? = null
     private val binding
@@ -29,10 +28,9 @@ class ListPokemonFragment : Fragment() {
             "View was destroyed"
         }
 
-
     private val viewModel by viewModel<ListPokemonViewModel>()
 
-
+    // Inflates the fragment's view and returns the root view
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -43,50 +41,65 @@ class ListPokemonFragment : Fragment() {
             .root
     }
 
+    // Sets up the fragment's views and observes the view model's data
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        with(binding) {
-            toolbar.setupWithNavController(findNavController())
 
-            val adapter =
-                PokemonAdapter(requireContext()) {
-                    findNavController().navigate(ListPokemonFragmentDirections.actionListPokemonFragmentToDetailPokemonFragment(
-                        it.id))
-                }
-            swipeLayout.setOnRefreshListener {
-                swipeLayout.isRefreshing = false
+        with(binding) {
+            val adapter = PokemonAdapter(requireContext()) { pokemon ->
+                findNavController().navigate(
+                    ListPokemonFragmentDirections.actionListPokemonFragmentToDetailPokemonFragment(pokemon.id)
+                )
             }
-            val layoutManager = LinearLayoutManager(requireContext())
             recyclerView.adapter = adapter
-            recyclerView.layoutManager = layoutManager
+            recyclerView.layoutManager = LinearLayoutManager(requireContext())
             recyclerView.addPokemonDecoration(SPACE_SIZE)
-            recyclerView.addPaginationScrollListener(layoutManager, ITEM_TO_LOAD) {
+            recyclerView.addPaginationScrollListener(
+                layoutManager = recyclerView.layoutManager as LinearLayoutManager,
+                itemsToLoad = ITEM_TO_LOAD
+            ) {
                 viewModel.onLoadPokemons()
             }
 
+            // Observe the view model's data and update the views accordingly
 
-
-            viewModel.state.onEach { lce ->
-                when (lce) {
-                    is LceState.Content -> {
-                        isVisibleProgressBar(false)
-                    }
-                    is LceState.Error -> {
-                        isVisibleProgressBar(false)
-                        Toast.makeText(requireContext(),
-                            lce.throwable.message ?: "", Toast.LENGTH_SHORT).show()
-                    }
-                    LceState.Loading -> {
-                        isVisibleProgressBar(true)
+            lifecycleScope.launch {
+                viewModel.state.collect { lce ->
+                    when (lce) {
+                        is LceState.Content -> {
+                            isVisibleProgressBar(false)
+                        }
+                        is LceState.Error -> {
+                            isVisibleProgressBar(false)
+                            Toast.makeText(
+                                requireContext(),
+                                lce.throwable.message ?: "",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        LceState.Loading -> {
+                            isVisibleProgressBar(true)
+                        }
                     }
                 }
-            }.launchIn(viewLifecycleOwner.lifecycleScope)
+            }
 
-            viewModel.pokemonsFlow.onEach {
-                adapter.submitList(it)
-            }.launchIn(viewLifecycleOwner.lifecycleScope)
+            // Observe the view model's pokemonsFlow and submit the list to the adapter
+            lifecycleScope.launch {
+                viewModel.pokemonsFlow.collect { pokemons ->
+                    adapter.submitList(pokemons)
+                }
+            }
 
+
+            swipeLayout.setOnRefreshListener {
+                swipeLayout.isRefreshing = false
+            }
         }
+    }
+
+    private fun isVisibleProgressBar(visible: Boolean) {
+        binding.paginationProgressBar.isVisible = visible
     }
 
     override fun onDestroyView() {
@@ -94,13 +107,8 @@ class ListPokemonFragment : Fragment() {
         _binding = null
     }
 
-    private fun isVisibleProgressBar(visible:Boolean) {
-        binding.paginationProgressBar.isVisible = visible
-    }
-
     companion object {
         private const val SPACE_SIZE = 25
         private const val ITEM_TO_LOAD = 20
     }
-
 }
